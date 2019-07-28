@@ -15,6 +15,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
         app:srcCompat="@drawable/logo" />
+
     <TextView
         android:id="@+id/textViewOTP"
         android:layout_width="wrap_content"
@@ -24,7 +25,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:shadowColor="#001B1212"
-        android:text="Email"
+        android:text="Username"
         android:textColor="#113011"
         android:textSize="20sp" />
     <EditText
