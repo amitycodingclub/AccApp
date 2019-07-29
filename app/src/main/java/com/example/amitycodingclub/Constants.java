@@ -35,7 +35,7 @@ public class Constants {
 
     public void setID(String ID) {
         this.ID = ID;
-        sharedPreferences.edit().putString("ID",ID).apply();
+        sharedPreferences.edit().putString("ID",ID).commit();
 
     }
 
@@ -46,7 +46,7 @@ public class Constants {
 
     public void setUser_login(String user_login) {
         this.user_login = user_login;
-        sharedPreferences.edit().putString("user_login",user_login).apply();
+        sharedPreferences.edit().putString("user_login",user_login).commit();
     }
 
     public String getUser_nicename() {
@@ -56,7 +56,7 @@ public class Constants {
 
     public void setUser_nicename(String user_nicename) {
         this.user_nicename = user_nicename;
-        sharedPreferences.edit().putString("user_nicename",user_nicename).apply();
+        sharedPreferences.edit().putString("user_nicename",user_nicename).commit();
     }
 
     public String getUser_email() {
@@ -66,7 +66,7 @@ public class Constants {
 
     public void setUser_email(String user_email) {
         this.user_email = user_email;
-        sharedPreferences.edit().putString("user_email",user_email).apply();
+        sharedPreferences.edit().putString("user_email",user_email).commit();
     }
 
     public String getUser_url() {
@@ -76,7 +76,7 @@ public class Constants {
 
     public void setUser_url(String user_url) {
         this.user_url = user_url;
-        sharedPreferences.edit().putString("user_url",user_url).apply();
+        sharedPreferences.edit().putString("user_url",user_url).commit();
 
     }
 
@@ -87,7 +87,7 @@ public class Constants {
 
     public void setUser_registered(String user_user_registered) {
         this.user_registered = user_user_registered;
-        sharedPreferences.edit().putString("user_registered",user_registered).apply();
+        sharedPreferences.edit().putString("user_registered",user_registered).commit();
     }
 
     public String getUser_activation_key() {
@@ -97,7 +97,7 @@ public class Constants {
 
     public void setUser_activation_key(String user_activation_key) {
         this.user_activation_key = user_activation_key;
-        sharedPreferences.edit().putString("user_activation_key",user_activation_key).apply();
+        sharedPreferences.edit().putString("user_activation_key",user_activation_key).commit();
     }
 
     public String getUser_status() {
@@ -107,7 +107,7 @@ public class Constants {
 
     public void setUser_status(String user_status) {
         this.user_status = user_status;
-        sharedPreferences.edit().putString("user_status",user_status).apply();
+        sharedPreferences.edit().putString("user_status",user_status).commit();
     }
 
     public String getDisplay_name() {
@@ -117,7 +117,7 @@ public class Constants {
 
     public void setDisplay_name(String display_name) {
         this.display_name = display_name;
-        sharedPreferences.edit().putString("display_name",display_name).apply(); 
+        sharedPreferences.edit().putString("display_name",display_name).commit(); 
     }
 
     public String getSpam() {
@@ -127,7 +127,7 @@ public class Constants {
 
     public void setSpam(String spam) {
         this.spam = spam;
-        sharedPreferences.edit().putString("spam",spam).apply();
+        sharedPreferences.edit().putString("spam",spam).commit();
 
     }
 
@@ -139,7 +139,7 @@ public class Constants {
 
     public void setDeleted(String deleted) {
         this.deleted = deleted;
-        sharedPreferences.edit().putString("deleted",deleted).apply();
+        sharedPreferences.edit().putString("deleted",deleted).commit();
 
     }
 
@@ -154,9 +154,10 @@ public class Constants {
     public void setSubscriber(boolean subscriber) {
         this.subscriber = subscriber;
         if(subscriber) {
-            sharedPreferences.edit().putString("deleted", "true").apply();
+            sharedPreferences.edit().putString("subscriber", "true").commit();
+            sharedPreferences.edit().putString("subscriber", "true").commit();
         }else{
-            sharedPreferences.edit().putString("deleted", "false").apply();
+            sharedPreferences.edit().putString("subscriber", "false").commit();
         }
     }
 
@@ -167,7 +168,7 @@ public class Constants {
 
     public void setCap_key(String cap_key) {
         this.cap_key = cap_key;
-        sharedPreferences.edit().putString("cap_key",cap_key).apply();
+        sharedPreferences.edit().putString("cap_key",cap_key).commit();
     }
 
     public String getRoles() {
@@ -177,7 +178,7 @@ public class Constants {
 
     public void setRoles(String roles) {
         this.roles = roles;
-        sharedPreferences.edit().putString("roles",roles).apply();
+        sharedPreferences.edit().putString("roles",roles).commit();
 
     }
 
@@ -192,9 +193,9 @@ public class Constants {
     public void setRead(boolean read) {
         this.read = read;
         if(read) {
-            sharedPreferences.edit().putString("read", "true").apply();
+            sharedPreferences.edit().putString("read", "true").commit();
         }else{
-            sharedPreferences.edit().putString("read", "false").apply();
+            sharedPreferences.edit().putString("read", "false").commit();
         }
     }
     public boolean isLevel_0() {
@@ -208,9 +209,9 @@ public class Constants {
     public void setLevel_0(boolean level_0) {
         this.level_0 = level_0;
         if(level_0) {
-            sharedPreferences.edit().putString("level_0", "true").apply();
+            sharedPreferences.edit().putString("level_0", "true").commit();
         }else{
-            sharedPreferences.edit().putString("level_0", "false").apply();
+            sharedPreferences.edit().putString("level_0", "false").commit();
         }
     }
 
@@ -225,9 +226,9 @@ public class Constants {
     public void setWoffice_read_wikies(boolean woffice_read_wikies) {
         this.woffice_read_wikies = woffice_read_wikies;
         if(woffice_read_wikies) {
-            sharedPreferences.edit().putString("woffice_read_wikies", "true").apply();
+            sharedPreferences.edit().putString("woffice_read_wikies", "true").commit();
         }else{
-            sharedPreferences.edit().putString("woffice_read_wikies", "false").apply();
+            sharedPreferences.edit().putString("woffice_read_wikies", "false").commit();
         }
     }
 
@@ -238,7 +239,7 @@ public class Constants {
 
     public void setFilter(String filter) {
         this.filter = filter;
-        sharedPreferences.edit().putString("filter",filter).apply();
+        sharedPreferences.edit().putString("filter",filter).commit();
 
     }
     public Constants(Context context) {

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     EditText etEmail,etPassward;
     Button btnLognin;
     TextView btnsignup;
-
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         etPassward = findViewById(R.id.mainactivity_edittext_password);
         btnLognin = findViewById(R.id.mainactivity_button_login);
         btnsignup = findViewById(R.id.mainactivity_button_signup);
+        progressBar = findViewById(R.id.login_progressBar);
 
         btnLognin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
         String user = "nouser";
         private Constants constants;
         private String ip;
-
-
 
         @Override
         protected String doInBackground(String... strings) {
@@ -117,11 +117,17 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            return "error";
+            return "neterror";
         }
 
         @Override
         protected void onPreExecute() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setAlpha(1);
+                }
+            });
             alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setTitle("LoginStatus");
         }
@@ -134,61 +140,93 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("ssss",s);
-//            try {
-//                boolean loginSuccessful = s.contains("loginsuccess");
-//                boolean incorrectPassword = s.contains("incorrectpassword");
-//                boolean userNotFound = s.contains("userdoesnotexist");
-//                boolean vneed = s.contains("vneed");
-//                Log.i("SessionId",s);
-//
-//                if (loginSuccessful) {
-//                    //alertDialog.setMessage("Login Successful!");
-//                    try {
-//                        JSONObject jsonObj = new JSONObject(s);
-//                        constants.setEmail(jsonObj.getString("email"));
-//                        constants.setPhone(jsonObj.getString("phone"));
-//                        constants.setName(jsonObj.getString("name"));
-//                        constants.setGender(jsonObj.getString("gender"));
-//                        constants.setDob(jsonObj.getString("dob"));
-//                        String p = "";
-//                        for(int k=0;k<Integer.parseInt(jsonObj.getString("password_len"));k++){
-//                            p+="•";
-//                        }
-//                        constants.setPassword_coded(p);
-//
-//                    }catch (Exception e){
-//                        e.printStackTrace();
-//                    }
-//                    Intent i = new Intent(context,HomeActivity.class);
-//                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    //Generating SESSION_ID
-//                    //s = s.replace("loginsuccess","");
-//
-//                    context.startActivity(i);
-//                    return;
-//                } else if (incorrectPassword) {
-//                    alertDialog.setMessage("Incorrect Password!");
-//                    Log.i("info",s);
-//                } else if (userNotFound) {
-//                    alertDialog.setMessage("User does not exist!");
-//                } else if(vneed){
-//                    Intent i = new Intent(getApplication(),VerifyEmail.class);
-//                    i.putExtra("email",user);
-//                    startActivity(i);
-//                } else {
-//                    alertDialog.setMessage("Unknown error!");
-//                    Log.i("error", s);
-//                }
-//                alertDialog.show();
-//            }catch (Exception e){
-//                e.printStackTrace();
-//                Log.i("Exception","e");
-//            }
-            if (s.contains("true")){
-                Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(context, "Login Unsuccessfull", Toast.LENGTH_SHORT).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setAlpha(0);
+                }
+            });
+            try {
+                boolean loginSuccessful = s.contains("ID");
+                boolean loginUnsuccessful = s.contains("incorrect_password");
+                boolean neterror = s.contains("nererror");
+
+
+                if (loginSuccessful) {
+                    //alertDialog.setMessage("Login Successful!");
+                    try {
+                        JSONObject jsonObj = new JSONObject(s);
+
+                        JSONObject data_json = new JSONObject(jsonObj.getString("data"));
+                        constants.setID(data_json.getString("ID"));
+                        constants.setUser_login(data_json.getString("user_login"));
+                        constants.setUser_nicename(data_json.getString("user_nicename"));
+                        constants.setUser_email(data_json.getString("user_email"));
+                        constants.setUser_url(data_json.getString("user_url"));
+                        constants.setUser_registered(data_json.getString("user_registered"));
+                        constants.setUser_activation_key(data_json.getString("user_activation_key"));
+                        constants.setUser_status(data_json.getString("user_status"));
+                        constants.setDisplay_name(data_json.getString("display_name"));
+                        constants.setSpam(data_json.getString("spam"));
+                        constants.setDeleted(data_json.getString("deleted"));
+
+
+                        JSONObject caps_json = new JSONObject(jsonObj.getString("caps"));
+                        if (caps_json.getString("subscriber").equals("true")){
+                            constants.setSubscriber(true);
+                        }else{
+                            constants.setSubscriber(false);
+                        }
+
+                        constants.setRoles(jsonObj.getString("roles"));
+
+                        JSONObject allcaps_json = new JSONObject(jsonObj.getString("allcaps"));
+                        if (allcaps_json.getString("read").equals("true")){
+                            constants.setRead(true);
+                        }else{
+                            constants.setRead(false);
+                        }
+                        if(allcaps_json.getString("level_0").equals("true")){
+                            constants.setLevel_0(true);
+                        }else{
+                            constants.setLevel_0(false);
+                        }
+                        if(allcaps_json.getString("woffice_read_wikies").equals("true")){
+                            constants.setLevel_0(false);
+                        }
+                        constants.setFilter(jsonObj.getString("filter"));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    Intent i = new Intent(context,HomeActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
+
+                    //Printing details log
+                    String finalString = "ID:"+constants.getID()+"\n" +
+                            "user_login:"+constants.getUser_login()+"\n" +
+                            "user_nicename:"+constants.getUser_nicename()+"\n" +
+                            "user_email:"+constants.getUser_email()+"\n" +
+                            "user_url:"+constants.getUser_url()+"\n" +
+                            "user_registered:"+constants.getUser_registered()+"\n" +
+                            "user_activation_key:"+constants.getUser_activation_key()+"\n" +
+                            "user_status:"+constants.getUser_status()+"\n" +
+                            "display_name:"+constants.getDisplay_name()+"\n" +
+                            "spam:"+constants.getSpam()+"\n" +
+                            "deleted:"+constants.getDeleted()+"\n" +
+                            "roles:"+constants.getRoles();
+                    Log.i("finla output",finalString);
+                } else if (loginUnsuccessful) {
+                    alertDialog.setMessage("Incorrect Password or username!");
+                    alertDialog.show();
+                    Log.i("info",s);
+                } else if (neterror) {
+                    alertDialog.setMessage("Network Error!");
+                    alertDialog.show();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.i("Exception","e");
             }
         }
 
