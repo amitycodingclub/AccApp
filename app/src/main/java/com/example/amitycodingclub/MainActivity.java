@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 boolean loginSuccessful = s.contains("ID");
                 boolean loginUnsuccessful = s.contains("incorrect_password");
-                boolean neterror = s.contains("nererror");
+                boolean neterror = s.contains("neterror");
 
 
                 if (loginSuccessful) {
