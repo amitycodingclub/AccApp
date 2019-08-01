@@ -25,8 +25,12 @@ public class Constants {
     private boolean level_0=false;
     private boolean woffice_read_wikies=false;
     private String filter="";
+    private String apiKey = "f20031a4af1f95cc7c30bb81c4ae4f3b";
 
 
+    public String getApiKey() {
+        return apiKey;
+    }
 
     public String getID() {
         ID = sharedPreferences.getString("ID","");

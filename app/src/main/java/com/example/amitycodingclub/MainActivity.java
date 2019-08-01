@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     //General variable declaration.
     EditText etEmail,etPassward;
     Button btnLognin;
-    TextView btnsignup;
+    TextView btnsignup,forgetPassword;
     ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         etEmail = findViewById(R.id.mainactivity_edittext_email);
         etPassward = findViewById(R.id.mainactivity_edittext_password);
+        forgetPassword = findViewById(R.id.btnforgetpassword);
         btnLognin = findViewById(R.id.mainactivity_button_login);
         btnsignup = findViewById(R.id.mainactivity_button_signup);
         progressBar = findViewById(R.id.login_progressBar);
-
         btnLognin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 backgroundWorker.execute("login",etEmail.getText().toString(),etPassward.getText().toString());
             }
         });
+
     }
     public class BackgroundWorker extends AsyncTask<String, String, String> {
         Context context;
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
                     Log.i("status","buffer writer working");
 
-                    String post_data = URLEncoder.encode("username","UTF-8")+"="+URLEncoder.encode(username,"UTF-8")+"&"+URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(password,"UTF-8");
+                    String post_data = URLEncoder.encode("username","UTF-8")+"="+URLEncoder.encode(username,"UTF-8")+"&"+URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(password,"UTF-8")+"&"+URLEncoder.encode("key","UTF-8")+"="+URLEncoder.encode(constants.getApiKey(),"UTF-8");
                     Log.i("status","string post_data concatenation successful");
 
                     bufferedWriter.write(post_data);
@@ -94,8 +95,16 @@ public class MainActivity extends AppCompatActivity {
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     outputStream.close();
-
-                    //reading response for feedback
+                    String headerName = "";
+                    String cookieValue = null;
+                    for (int i = 1; (headerName = httpURLConnection.getHeaderFieldKey(i)) != null; i++)
+                    {
+                        if(headerName.equals("Set-Cookie"))
+                        {
+                            cookieValue = httpURLConnection.getHeaderField(i);
+                        }
+                    }                    //reading response for feedback
+                    Log.i("cookie",cookieValue);
                     Log.i("status","now reading feedback");
 
 
@@ -199,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     Intent i = new Intent(context,HomeActivity.class);
+                    //Intent i = new Intent(context,TestActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(i);
 
@@ -221,8 +231,14 @@ public class MainActivity extends AppCompatActivity {
                     alertDialog.show();
                     Log.i("info",s);
                 } else if (neterror) {
+                    Log.i("error",s);
                     alertDialog.setMessage("Network Error!");
-                    alertDialog.show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            alertDialog.show();
+                        }
+                    });
                 }
             }catch (Exception e){
                 e.printStackTrace();
