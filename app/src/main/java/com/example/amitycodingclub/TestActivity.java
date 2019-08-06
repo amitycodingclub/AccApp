@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -33,7 +34,7 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
         textView = findViewById(R.id.demotext);
         BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-        backgroundWorker.execute("xyz","f20031a4af1f95cc7c30bb81c4ae4f3b");
+        backgroundWorker.execute("getusers");
     }
     public class BackgroundWorker extends AsyncTask<String, String, String> {
         Context context;
@@ -45,15 +46,24 @@ public class TestActivity extends AppCompatActivity {
         protected String doInBackground(String... strings) {
             String type = strings[0];
             constants = new Constants(context);
-            String login_url = "https://acc.amityaump.com/wp-json/app-gateway/users";
+            String login_url = "https://acc.amityaump.com/wp-json/app-gateway/users?";
 
-            if (type.equals("xyz")){
+            if (type.equals("getusers")){
                 try {
+                    String apiKey = constants.getApiKey();
                     Log.i("status","inside the login try catch");
                     URL url = new URL(login_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+
+
+
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
+
+
+                    //this is the auth token.
+                    httpURLConnection.setRequestProperty("Authorization","Bearer "+constants.getToken());
+
                     Log.i("status","Http url connection established properly");
 
                     OutputStream outputStream = httpURLConnection.getOutputStream();
@@ -61,8 +71,9 @@ public class TestActivity extends AppCompatActivity {
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
                     Log.i("status","buffer writer working");
 
-                    String post_data = URLEncoder.encode("key","UTF-8")+"="+URLEncoder.encode("f20031a4af1f95cc7c30bb81c4ae4f3b","UTF-8");
+                    String post_data = URLEncoder.encode("key","UTF-8")+"="+URLEncoder.encode(apiKey,"UTF-8");
                     Log.i("status","string post_data concatenation successful");
+                    Log.i("post_data",post_data);
 
                     bufferedWriter.write(post_data);
                     Log.i("status","bufferedWriter.write(post_data) executed successfully");

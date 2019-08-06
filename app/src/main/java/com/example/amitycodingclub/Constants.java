@@ -27,6 +27,22 @@ public class Constants {
     private String filter="";
     private String apiKey = "f20031a4af1f95cc7c30bb81c4ae4f3b";
 
+    private String token = "";
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public String getToken() {
+        token = sharedPreferences.getString("token","");
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+        sharedPreferences.edit().putString("token",token).commit();
+
+    }
 
     public String getApiKey() {
         return apiKey;

@@ -28,6 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     public class BackgroundWorker extends AsyncTask<String, String, String> {
         Context context;
         AlertDialog alertDialog;
-        String user = "nouser";
+        String username = "",password = "";
         private Constants constants;
         private String ip;
 
@@ -71,14 +73,17 @@ public class MainActivity extends AppCompatActivity {
 
             if (type.equals("login")){
                 try {
-                    String username = strings[1];
-                    String password = strings[2];
+                    username = strings[1];
+                    password = strings[2];
                     Log.i("status","inside the login try catch");
                     URL url = new URL(login_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+
+
+
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoOutput(true);
+
                     Log.i("status","Http url connection established properly");
 
                     OutputStream outputStream = httpURLConnection.getOutputStream();
@@ -149,12 +154,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setAlpha(0);
-                }
-            });
             try {
                 boolean loginSuccessful = s.contains("ID");
                 boolean loginUnsuccessful = s.contains("incorrect_password");
@@ -207,12 +206,8 @@ public class MainActivity extends AppCompatActivity {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    Intent i = new Intent(context,HomeActivity.class);
-                    //Intent i = new Intent(context,TestActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(i);
-
-                    //Printing details log
+                    TokenGeter tokenGeter = new TokenGeter(context);
+                    tokenGeter.execute("gettoken",username,password);
                     String finalString = "ID:"+constants.getID()+"\n" +
                             "user_login:"+constants.getUser_login()+"\n" +
                             "user_nicename:"+constants.getUser_nicename()+"\n" +
@@ -247,6 +242,123 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public BackgroundWorker(Context ctx) {
+            context = ctx;
+        }
+    }
+    public class TokenGeter extends AsyncTask<String, String, String> {
+        Context context;
+        String username = "",password = "";
+        Constants constants;
+        @Override
+        protected String doInBackground(String... strings) {
+            String type = strings[0];
+            constants = new Constants(context);
+            String login_url = "https://acc.amityaump.com/wp-json/jwt-auth/v1/token?";
+
+            if (type.equals("gettoken")){
+                try {
+                    username = strings[1];
+                    password = strings[2];
+                    Log.i("status","inside the login try catch");
+                    URL url = new URL(login_url);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+
+                    Log.i("status","Http url connection established properly");
+
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                    Log.i("status","buffer writer working");
+
+
+                    String post_data = URLEncoder.encode("username","UTF-8")+"="+URLEncoder.encode(username,"UTF-8")+"&"+URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(password,"UTF-8")+"&"+URLEncoder.encode("key","UTF-8")+"="+URLEncoder.encode(constants.getApiKey(),"UTF-8");
+                    Log.i("status","string post_data concatenation successful");
+
+                    bufferedWriter.write(post_data);
+                    Log.i("status","bufferedWriter.write(post_data) executed successfully");
+
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    outputStream.close();
+                    String headerName = "";
+                    String cookieValue = null;
+                    for (int i = 1; (headerName = httpURLConnection.getHeaderFieldKey(i)) != null; i++)
+                    {
+                        if(headerName.equals("Set-Cookie"))
+                        {
+                            cookieValue = httpURLConnection.getHeaderField(i);
+                        }
+                    }                    //reading response for feedback
+                    Log.i("cookie",cookieValue);
+                    Log.i("status","now reading feedback");
+
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                    String result = "";
+                    String line  = "";
+                    while ((line = bufferedReader.readLine())!=null){
+                        result += line;
+                    }
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+
+                    return result;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "neterror";
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.i("token",s);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setAlpha(0);
+                }
+            });
+            try {
+                boolean loginSuccessful = s.contains("token");
+                if (loginSuccessful) {
+                    //alertDialog.setMessage("Login Successful!");
+                    try {
+                        JSONObject jsonObj = new JSONObject(s);
+                        constants.setToken(jsonObj.getString("token"));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    Intent i = new Intent(context,HomeActivity.class);
+                    //Intent i = new Intent(context,TestActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.i("Exception","e");
+            }
+
+        }
+
+        public TokenGeter(Context ctx) {
             context = ctx;
         }
     }

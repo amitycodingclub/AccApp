@@ -32,8 +32,8 @@
                     android:id="@+id/about"
                     android:icon="@drawable/ic_about"
                     android:title="About" />
-                <itme
-                    android:id="@+id/groups"
+                <item
+                    android:id="@+id/grp"
                     android:icon="@drawable/ic_group"
                     android:title="Groups" />
             </menu>
